@@ -37,15 +37,15 @@ aioredis>=2.0.1
 # Social Media APIs
 tweepy>=4.14.0
 facebook-sdk>=3.1.0
-python-linkedin-v2>=2.0.1
+python-linkedin>=1.9.0
 google-api-python-client>=2.100.0
-youtube-api>=2.0.0
+# youtube-api>=2.0.0 - Package not reliable
 
 # Analytics & Business Intelligence
 google-analytics-reporting>=0.7.0
 google-ads>=21.0.0
 pytrends>=4.9.0
-semrush-python>=1.0.0
+# semrush-python>=1.0.0 - Package not reliable
 
 # Web Scraping & Data Collection
 beautifulsoup4>=4.12.0

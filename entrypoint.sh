@@ -7,5 +7,16 @@ PORT=${PORT:-8000}
 
 echo "Starting Morvo AI Platform on port: $PORT"
 
-# Run the application with the expanded PORT
-exec uvicorn test_minimal_api:app --host 0.0.0.0 --port $PORT
+# Decide which API to run based on DEPLOYMENT_TIER env var
+DEPLOYMENT_TIER=${DEPLOYMENT_TIER:-"minimal"}
+
+case $DEPLOYMENT_TIER in
+  "auth")
+    echo "Starting Auth tier API on port: $PORT"
+    exec uvicorn test_auth_api:app --host 0.0.0.0 --port $PORT
+    ;;
+  *)
+    echo "Starting Minimal API on port: $PORT"
+    exec uvicorn test_minimal_api:app --host 0.0.0.0 --port $PORT
+    ;;
+esac

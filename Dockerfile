@@ -1,34 +1,18 @@
-# Use Python 3.10 slim image for Railway deployment
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies for AI/ML packages
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first for better caching
+# Copy minimal files only
 COPY requirements.txt .
+COPY test_minimal_api.py .
 
-# Install Python dependencies
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
-
-# Create results directory for agent outputs
-RUN mkdir -p results
-
-# Set environment variables for Railway deployment
-ENV PORT=8000
+# Environment
 ENV HOST=0.0.0.0
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Expose port
-EXPOSE $PORT
-
-# Use simple CMD - railway.toml will override with correct command
+# Simple CMD
 CMD ["uvicorn", "test_minimal_api:app", "--host", "0.0.0.0", "--port", "8000"]

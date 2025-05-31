@@ -1,4 +1,6 @@
 # Morvo AI Marketing Platform - Railway Deployment Dependencies
+# Updated: 2025-05-31 - Clean minimal dependencies for Railway deployment
+
 # Core FastAPI Framework
 fastapi>=0.115.0
 uvicorn[standard]>=0.34.0

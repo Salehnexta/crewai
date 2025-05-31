@@ -13,8 +13,9 @@ openai==1.75.0
 langchain-core==0.3.0
 langchain-openai==0.2.0
 
-# Core CrewAI (no tools)
+# Core CrewAI (with tools)
 crewai==0.121.0
+crewai-tools==0.46.0
 
 # Authentication
 python-jose[cryptography]==3.5.0

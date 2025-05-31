@@ -31,4 +31,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE $PORT
 
 # Use the minimal test API for debugging Railway deployment
-CMD uvicorn test_minimal_api:app --host 0.0.0.0 --port ${PORT:-8000} --log-level info
+CMD ["python", "-c", "import uvicorn; uvicorn.run('test_minimal_api:app', host='0.0.0.0', port=int(__import__('os').environ.get('PORT', 8000)))"]

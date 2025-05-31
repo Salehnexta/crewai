@@ -1,42 +1,57 @@
-# Morvo AI Marketing Platform - FRESH Railway Deployment
-# Created: 2025-05-31 15:48 - Completely new file to bypass Railway cache
+# Morvo AI Marketing Platform - Fixed Railway Deployment
+# Created: 2025-05-31 - Clean requirements without problematic packages
 
 # Core FastAPI Framework
-fastapi>=0.115.0
-uvicorn[standard]>=0.34.0
-python-dotenv>=1.0.0
-python-multipart>=0.0.6
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+python-dotenv==1.1.0
+python-multipart==0.0.20
 
 # AI and CrewAI Framework  
-crewai>=0.121.0
-crewai-tools>=0.46.0
-openai>=1.75.0
-langchain>=0.3.0
-langchain-openai>=0.2.0
-langchain-community>=0.3.0
-langchain-core>=0.3.0
+crewai==0.121.0
+crewai-tools==0.46.0
+openai==1.75.0
+langchain==0.3.0
+langchain-openai==0.2.0
+langchain-community==0.3.0
+langchain-core==0.3.0
 
 # Database and Backend
-sqlalchemy>=2.0.23
-psycopg2-binary>=2.9.9
-alembic>=1.12.0
-supabase>=2.3.0
-postgrest>=0.13.0
+sqlalchemy==2.0.41
+psycopg2-binary==2.9.10
+alembic==1.16.1
+supabase==2.15.2
+postgrest==1.0.2
 
 # Security and Authentication
-python-jose[cryptography]>=3.3.0
-passlib>=1.7.4
-pyjwt>=2.6.0
+python-jose[cryptography]==3.5.0
+passlib==1.7.4
+pyjwt==2.10.1
 
-# Background Tasks
-celery>=5.3.0
+# Background Tasks and Redis
+celery==5.5.2
+redis==6.2.0
+aioredis==2.0.1
 
 # HTTP and Utilities
-requests>=2.32.0
-aioredis>=2.0.1
+requests==2.32.3
 
 # Data Processing
-pydantic>=2.4.0
+pydantic==2.11.5
 
 # Production Server
-gunicorn>=21.0.0
+gunicorn==21.2.0
+
+# Social Media APIs (working alternatives)
+tweepy==4.15.0
+facebook-sdk==3.1.0
+
+# Google APIs (fixed)
+google-api-python-client==2.170.0
+google-auth==2.37.0
+google-auth-oauthlib==1.2.1
+
+# REMOVED PROBLEMATIC PACKAGES:
+# - google-analytics-reporting (doesn't exist on PyPI)
+# - python-linkedin (build issues)
+# - Any packages requiring Python 3.11+

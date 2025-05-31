@@ -42,8 +42,8 @@ google-api-python-client>=2.100.0
 # youtube-api>=2.0.0 - Package not reliable
 
 # Analytics & Business Intelligence
-google-analytics-reporting>=0.7.0
-google-ads>=21.0.0
+# google-analytics-reporting>=0.7.0 - Package not available
+# google-ads>=21.0.0 - Package requires auth setup
 pytrends>=4.9.0
 # semrush-python>=1.0.0 - Package not reliable
 

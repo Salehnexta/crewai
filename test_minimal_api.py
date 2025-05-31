@@ -1,39 +1,19 @@
-#!/usr/bin/env python3
-"""
-Minimal FastAPI test for Railway deployment
-Tests basic functionality without complex imports
-"""
-from fastapi import FastAPI
-import uvicorn
 import os
-from datetime import datetime
+import uvicorn
+from fastapi import FastAPI
 
-# Minimal FastAPI app
-app = FastAPI(
-    title="Minimal Test API",
-    description="Basic Railway deployment test",
-    version="1.0.0"
-)
-
-@app.get("/health")
-async def health_check():
-    """Minimal health check"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "port": os.environ.get("PORT", "8000")
-    }
+app = FastAPI()
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
-    return {"message": "Minimal API is working!"}
+    return {
+        "message": "Minimal API for Railway debugging",
+        "status": "working"
+    }
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "minimal-fastapi"}
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(
-        "test_minimal_api:app",
-        host="0.0.0.0",
-        port=port,
-        log_level="info"
-    )
+    uvicorn.run("test_minimal_api:app", host="0.0.0.0", port=8000, reload=True)

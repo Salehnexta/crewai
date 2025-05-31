@@ -3,11 +3,11 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy minimal files only
-COPY requirements.txt .
+COPY requirements_minimal.txt .
 COPY test_minimal_api.py .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install minimal dependencies only
+RUN pip install --no-cache-dir -r requirements_minimal.txt
 
 # Environment
 ENV HOST=0.0.0.0

@@ -2,6 +2,9 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# Cache bust to force fresh build
+RUN echo "Build timestamp: $(date)" > /tmp/cachebust
+
 # Copy minimal files only
 COPY requirements_minimal.txt .
 COPY test_minimal_api.py .

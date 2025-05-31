@@ -31,4 +31,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE $PORT
 
 # Use the updated API file for Railway deployment with MCP
-CMD ["bash", "-c", "uvicorn morvo_integration_api:app --host 0.0.0.0 --port ${PORT:-8000} --log-level info"]
+CMD uvicorn morvo_integration_api:app --host 0.0.0.0 --port ${PORT:-8000} --log-level info

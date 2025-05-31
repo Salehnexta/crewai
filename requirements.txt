@@ -28,6 +28,8 @@ gunicorn==21.2.0
 openai==1.75.0
 langchain-core==0.3.0
 langchain-openai==0.2.0
+crewai==0.121.0
+crewai-tools==0.46.0
 
 # Background Tasks (Optional - comment out if not needed)
 celery==5.5.2
@@ -38,8 +40,6 @@ supabase==2.15.2
 postgrest==1.0.2
 
 # TEMPORARILY REMOVED TO FIX DEPLOYMENT:
-# crewai>=0.121.0  # This might be pulling in google-analytics-reporting
-# crewai-tools>=0.46.0  # This is likely the culprit
 # langchain>=0.3.0  # Full langchain has many dependencies
 # langchain-community>=0.3.0  # Community tools often problematic
 # tweepy>=4.14.0  # Social media APIs

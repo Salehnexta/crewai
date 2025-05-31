@@ -1,5 +1,5 @@
-# Morvo AI Marketing Platform - FRESH Railway Deployment
-# Created: 2025-05-31 15:48 - Completely new file to bypass Railway cache
+# Morvo AI Marketing Platform - Railway Deployment Dependencies
+# Updated: 2025-05-31 - Clean minimal dependencies for Railway deployment
 
 # Core FastAPI Framework
 fastapi>=0.115.0
@@ -7,7 +7,7 @@ uvicorn[standard]>=0.34.0
 python-dotenv>=1.0.0
 python-multipart>=0.0.6
 
-# AI and CrewAI Framework  
+# AI and CrewAI Framework
 crewai>=0.121.0
 crewai-tools>=0.46.0
 openai>=1.75.0
@@ -38,5 +38,5 @@ aioredis>=2.0.1
 # Data Processing
 pydantic>=2.4.0
 
-# Production Server
+# Development and Production Tools
 gunicorn>=21.0.0

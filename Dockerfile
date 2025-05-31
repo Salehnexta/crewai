@@ -31,5 +31,5 @@ ENV HOST=0.0.0.0
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Use shell form to expand environment variables
-CMD ["/bin/sh", "-c", "uvicorn test_minimal_api:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Explicitly use uvicorn with hardcoded port for reliability
+CMD ["uvicorn", "test_minimal_api:app", "--host", "0.0.0.0", "--port", "8000"]

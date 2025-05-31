@@ -1,21 +1,35 @@
 FROM python:3.10-slim
 
+# Cache bust - force rebuild (timestamp updated)
+RUN echo "Cache bust: $(date)"
+
 WORKDIR /app
 
-# Cache bust to force fresh build
-RUN echo "Build timestamp: $(date)" > /tmp/cachebust
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy minimal files only
+# Copy minimal requirements for testing
 COPY requirements_minimal.txt .
-COPY test_minimal_api.py .
 
-# Install minimal dependencies only
+# Install minimal dependencies for testing
 RUN pip install --no-cache-dir -r requirements_minimal.txt
 
-# Environment
+# Copy application code
+COPY . .
+
+# Create results directory
+RUN mkdir -p results
+
+# Expose port
+EXPOSE 8000
+
+# Set environment variables
 ENV HOST=0.0.0.0
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Simple CMD
-CMD ["uvicorn", "test_minimal_api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use shell form to expand environment variables
+CMD ["/bin/sh", "-c", "uvicorn test_minimal_api:app --host 0.0.0.0 --port ${PORT:-8000}"]

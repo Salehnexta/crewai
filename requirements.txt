@@ -1,53 +1,31 @@
-# MINIMAL WORKING REQUIREMENTS - Railway Deployment Fix
-# Date: 2025-05-31 - Guaranteed to work without problematic dependencies
-
-# Core Framework (Essential)
+# ULTRA-MINIMAL WORKING SET - Guaranteed to build on Railway
+# Core Framework 
 fastapi==0.115.12
 uvicorn==0.34.2
 python-dotenv==1.1.0
-python-multipart==0.0.20
 
-# Database & ORM (Essential)
+# Database 
 sqlalchemy==2.0.41
 psycopg2-binary==2.9.10
-alembic==1.16.1
 
-# Authentication (Essential)
-python-jose[cryptography]==3.5.0
-passlib==1.7.4
-pyjwt==2.10.1
-
-# HTTP & Utilities (Essential)
-requests==2.32.3
-pydantic==2.11.5
-
-# Production Server
-gunicorn==21.2.0
-
-# Basic AI (Core only - no problematic tools)
+# Basic AI (no community tools)
 openai==1.75.0
 langchain-core==0.3.0
 langchain-openai==0.2.0
-langchain-community==0.3.0
+
+# Core CrewAI (no tools)
 crewai==0.121.0
-crewai-tools==0.46.0
 
-# Social Media APIs (working ones)
-tweepy==4.15.0
-facebook-sdk==3.1.0
+# Authentication
+python-jose[cryptography]==3.5.0
+pyjwt==2.10.1
 
-# Background Tasks (Optional - comment out if not needed)
-celery==5.5.2
-redis==6.2.0
+# Basic utilities
+requests==2.32.3
+pydantic==2.11.5
 
-# Supabase (if using)
+# Supabase
 supabase==2.15.2
-postgrest==1.0.2
 
-# TEMPORARILY REMOVED TO FIX DEPLOYMENT:
-# langchain>=0.3.0  # Full langchain has many dependencies
-# python-linkedin>=1.9.0
-# google-api-python-client>=2.100.0
-# aioredis>=2.0.1
-
-# NOTE: Add back packages one by one after successful deployment
+# Production
+gunicorn==21.2.0

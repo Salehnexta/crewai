@@ -31,5 +31,7 @@ ENV HOST=0.0.0.0
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Use shell form to allow environment variable expansion
-CMD ["/bin/sh", "-c", "uvicorn test_minimal_api:app --host 0.0.0.0 --port $PORT"]
+# Use entrypoint script for proper environment variable expansion
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]

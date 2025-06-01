@@ -15,6 +15,9 @@ import json
 import logging
 
 from crews.morvo_marketing_crew import MorvoMarketingCrew
+from morvo_memory_routes import memory_router
+from agent_memory import AgentMemoryManager
+from mcp_integration import MCPIntegration
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,6 +46,13 @@ security = HTTPBearer()
 
 # Initialize Morvo Marketing Crew
 morvo_crew = MorvoMarketingCrew()
+
+# Initialize MCP integration and memory manager
+mcp = MCPIntegration()
+memory_manager = AgentMemoryManager()
+
+# Include memory router for MCP-based agent memory management
+app.include_router(memory_router)
 
 # Pydantic models for request/response
 class CompanyInfo(BaseModel):

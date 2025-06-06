@@ -1,8 +1,7 @@
 [build]
-builder = "NIXPACKS"
+builder = "nixpacks"
 
 [deploy]
-# This startCommand includes all necessary flags for WebSocket proxying
 startCommand = "sh -c \"uvicorn morvo_api_v2:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*' --ws-ping-interval 20 --ws-ping-timeout 20\""
 healthcheckPath = "/health"
 healthcheckTimeout = 100

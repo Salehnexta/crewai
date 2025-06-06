@@ -171,7 +171,7 @@ class MorvoConversationEngine:
             allow_delegation=False
         )
 
-    async def process_message(self, message: ChatMessage) -> ChatResponse:
+    async def process_message(self, message: ChatMessage) -> Dict:
         """معالجة رسالة المستخدم وإنتاج رد ذكي"""
         
         try:
@@ -258,21 +258,24 @@ class MorvoConversationEngine:
                 response_content = "أفهم أنك تحتاج مساعدة في التسويق الرقمي. 🤔 هل يمكنك توضيح أكثر كيف يمكنني مساعدتك؟"
                 components = []
             
-            return ChatResponse(
-                content=response_content,
-                intent_detected=intent,
-                confidence_score=0.85,
-                components=components,
-                next_actions=["يمكنك سؤالي عن أي شيء متعلق بالتسويق الرقمي"]
-            )
+            return {
+                "content": response_content,
+                "message_type": "assistant",
+                "components": components,
+                "intent_detected": intent,
+                "confidence_score": 0.85,
+                "next_actions": ["يمكنك سؤالي عن أي شيء متعلق بالتسويق الرقمي"]
+            }
             
         except Exception as e:
             logger.error(f"خطأ في معالجة المحادثة: {str(e)}")
-            return ChatResponse(
-                content="عذراً، حدث خطأ في فهم رسالتك. هل يمكنك إعادة الصياغة؟",
-                intent_detected="error",
-                confidence_score=0.0
-            )
+            return {
+                "content": "عذراً، حدث خطأ في فهم رسالتك. هل يمكنك إعادة الصياغة؟",
+                "message_type": "assistant",
+                "components": [],
+                "intent_detected": "error",
+                "confidence_score": 0.0
+            }
 
 # إنشاء محرك المحادثة
 try:
@@ -460,8 +463,8 @@ async def get_analysis_result(analysis_id: str) -> Dict:
 # 💬 **Chat & Conversation Endpoints**
 # ============================================================================
 
-@app.post("/api/v2/chat/message", response_model=ChatResponse)
-async def send_chat_message(message: ChatMessage) -> ChatResponse:
+@app.post("/api/v2/chat/message")
+async def send_chat_message(message: ChatMessage):
     """💬 إرسال رسالة لمورفو والحصول على رد ذكي"""
     
     try:
@@ -472,14 +475,18 @@ async def send_chat_message(message: ChatMessage) -> ChatResponse:
         
         # حفظ المحادثة في قاعدة البيانات (ستتم إضافة Supabase لاحقاً)
         
+        # تحويل الـ response إلى dict
         return response
         
     except Exception as e:
         logger.error(f"❌ خطأ في معالجة رسالة الشات: {str(e)}")
         return {
-            "status": "error",
-            "message": "خطأ في معالجة الرسالة",
-            "error": str(e)
+            "content": "عذراً، حدث خطأ في فهم رسالتك. هل يمكنك إعادة الصياغة؟",
+            "message_type": "assistant",
+            "components": [],
+            "intent_detected": "error",
+            "confidence_score": 0.0,
+            "next_actions": []
         }
 
 @app.websocket("/ws/{user_id}")

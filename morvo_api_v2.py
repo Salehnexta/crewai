@@ -93,8 +93,32 @@ class PlatformConnectionRequest(BaseModel):
     organization_id: str
 
 # متغيرات عامة
-website_scraper = MorvoWebsiteScraper()
-active_connections: Dict[str, WebSocket] = {}
+website_scraper = None  # Lazy initialization to avoid startup errors
+
+# Connection manager for WebSockets
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+    
+    def get_connection(self, connection_id: str):
+        return self.active_connections.get(connection_id)
+        
+    def add_connection(self, connection_id: str, websocket: WebSocket):
+        self.active_connections[connection_id] = websocket
+        
+    def remove_connection(self, connection_id: str):
+        if connection_id in self.active_connections:
+            del self.active_connections[connection_id]
+            
+    def get_all_connections(self):
+        return self.active_connections.items()
+        
+    def count_connections(self):
+        return len(self.active_connections)
+
+# Create the connection manager
+# Initialize connection manager at module level
+connection_manager = ConnectionManager()
 
 # ============================================================================
 # 🤖 **محرك المحادثة الذكي مع Intent Detection**
@@ -262,6 +286,9 @@ async def perform_website_analysis(url: str, org_id: str, analysis_type: str):
         logger.info(f"🔍 تنفيذ تحليل الموقع: {url}")
         
         # تنفيذ التحليل
+        global website_scraper
+        if website_scraper is None:
+            website_scraper = MorvoWebsiteScraper()
         analysis_result = await website_scraper.analyze_website(url)
         
         # حفظ النتائج في قاعدة البيانات (ستتم إضافة Supabase لاحقاً)
@@ -278,7 +305,7 @@ async def notify_analysis_complete(org_id: str, result: WebsiteAnalysisResult):
     
     try:
         # البحث عن اتصالات WebSocket نشطة للمؤسسة
-        for connection_id, websocket in active_connections.items():
+        for connection_id, websocket in connection_manager.get_all_connections():
             if org_id in connection_id:
                 await websocket.send_json({
                     "type": "website_analysis_complete",
@@ -336,11 +363,11 @@ async def send_chat_message(message: ChatMessage) -> ChatResponse:
 
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
-    """🔄 اتصال WebSocket للمحادثة المباشرة"""
-    
     await websocket.accept()
-    connection_id = f"{user_id}_{int(datetime.now().timestamp())}"
-    active_connections[connection_id] = websocket
+    connection_id = f"user_{user_id}_{datetime.now().timestamp()}"
+    
+    # Add connection
+    connection_manager.add_connection(connection_id, websocket)
     
     try:
         # رسالة ترحيب
@@ -376,11 +403,10 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             
     except WebSocketDisconnect:
         logger.info(f"انقطع اتصال WebSocket: {user_id}")
-        del active_connections[connection_id]
+        connection_manager.remove_connection(connection_id)
     except Exception as e:
         logger.error(f"خطأ في WebSocket: {str(e)}")
-        if connection_id in active_connections:
-            del active_connections[connection_id]
+        connection_manager.remove_connection(connection_id)
 
 # ============================================================================
 # 🎯 **Onboarding & User Setup Endpoints**
@@ -606,7 +632,7 @@ async def get_alerts_status():
             "campaign_performance",
             "market_trend"
         ],
-        "websocket_connections": len(active_connections),
+        "websocket_connections": connection_manager.count_connections() if hasattr(connection_manager, 'count_connections') else 0,
         "message": "نظام التنبيهات الذكية يعمل بكفاءة"
     }
 
@@ -625,15 +651,25 @@ async def run_smart_alerts_check(organization_id: str):
             "timestamp": datetime.now().isoformat()
         }
         
-        # إرسال إشعار لجميع الاتصالات النشطة
-        for connection_id, websocket in active_connections.items():
-            try:
-                await websocket.send_json(notification)
-            except Exception as e:
-                logger.error(f"خطأ في إرسال إشعار: {str(e)}")
+        await broadcast_alert(notification)
                 
     except Exception as e:
         logger.error(f"خطأ في فحص التنبيهات: {str(e)}")
+
+async def broadcast_alert(alert_data: dict):
+    """إرسال تنبيه لجميع المتصلين"""
+    try:
+        # Broadcast to all connections
+        for connection_id, websocket in connection_manager.get_all_connections():
+            try:
+                await websocket.send_json({
+                    "type": "alert",
+                    "data": alert_data
+                })
+            except Exception as e:
+                logger.error(f"Error sending alert to {connection_id}: {str(e)}")
+    except Exception as e:
+        logger.error(f"Broadcast error: {str(e)}")
 
 # ============================================================================
 # 📊 **Health Check & Status Endpoints**
@@ -642,14 +678,21 @@ async def run_smart_alerts_check(organization_id: str):
 @app.get("/health")
 async def health_check():
     """✅ فحص صحة الخادم"""
+    try:
+        connections = connection_manager.count_connections()
+        websocket_status = f"{connections} connections"
+    except Exception as e:
+        websocket_status = "initializing"
+        
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "version": "2.0.0",
+        "server": "Railway Production",
         "services": {
             "chat_engine": "active",
             "website_scraper": "active",
-            "websocket": f"{len(active_connections)} connections"
+            "websocket": websocket_status
         }
     }
 

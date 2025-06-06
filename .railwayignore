@@ -1,0 +1,14 @@
+Dockerfile*
+.dockerignore
+docker-compose*
+*.dockerfile
+frontend-project/
+test_*.mjs
+test_*.js
+scripts/
+*.backup
+logs/
+.git/
+.env.local
+README.md
+*.md

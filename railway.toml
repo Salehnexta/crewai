@@ -1,13 +1,12 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+builder = "NIXPACKS"
 
 [deploy]
 runtime = "V2"
 numReplicas = 1
-startCommand = "/app/entrypoint.sh"
+startCommand = "uvicorn morvo_api_railway:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"
 sleepApplication = false
 multiRegionConfig = { europe-west4-drams3a = { numReplicas = 1 } }
-restartPolicyType = "ALWAYS"
-healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+healthcheckTimeout = 100

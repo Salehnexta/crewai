@@ -15,14 +15,16 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies with explicit WebSocket support
-# Install uvicorn[standard] first to ensure proper WebSocket dependencies
-RUN pip install --no-cache-dir uvicorn[standard]==0.34.3
-RUN pip install --no-cache-dir websockets>=10.0 wsproto>=1.0.0
+# Install Python dependencies with simplified approach
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY morvo_api_railway.py .
+# Copy all application files
+COPY morvo_api_v2.py .
+COPY morvo_website_scraper.py .
+COPY smart_alerts.py .
+COPY semrush_supabase_integration.py .
+COPY agent_memory_manager.py .
+COPY agent_context_manager.py .
 
 # Expose port
 EXPOSE 8000
@@ -32,4 +34,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:$PORT/health || exit 1
 
 # Start command using PORT environment variable
-CMD sh -c "uvicorn morvo_api_railway:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*' --ws-ping-interval 20 --ws-ping-timeout 20"
+CMD sh -c "uvicorn morvo_api_v2:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*' --ws-ping-interval 20 --ws-ping-timeout 20"

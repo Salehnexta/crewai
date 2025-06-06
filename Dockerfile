@@ -1,37 +1,32 @@
 FROM python:3.10-slim
 
-# Cache bust - force rebuild (timestamp updated)
-RUN echo "Cache bust: $(date)"
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies for WebSocket support
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy minimal requirements for testing
-COPY requirements_minimal.txt .
+# Copy requirements first for better caching
+COPY requirements.txt .
 
-# Install minimal dependencies for testing
-RUN pip install --no-cache-dir -r requirements_minimal.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy all project files needed for the application
 COPY . .
-
-# Create results directory
-RUN mkdir -p results
 
 # Expose port
 EXPOSE 8000
 
-# Set environment variables
-ENV HOST=0.0.0.0
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:$PORT/health || exit 1
 
-# Use entrypoint script for proper environment variable expansion
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-CMD ["/app/entrypoint.sh"]
+# Start command using PORT environment variable
+CMD sh -c "uvicorn morvo_api_v2:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*' --ws-ping-interval 20 --ws-ping-timeout 20"

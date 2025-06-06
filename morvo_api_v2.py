@@ -71,7 +71,7 @@ class ChatMessage(BaseModel):
 class ChatResponse(BaseModel):
     content: str
     message_type: str = "assistant"
-    rich_components: Optional[List[Dict]] = []
+    components: Optional[List[Dict]] = []  # تم تغيير الاسم من rich_components
     intent_detected: Optional[str] = None
     confidence_score: Optional[float] = None
     next_actions: Optional[List[str]] = []
@@ -221,6 +221,38 @@ class MorvoConversationEngine:
                 response_content = "ممتاز! 📈 دعنا ننشئ حملة تسويقية ذكية. أحتاج لمعرفة:\n\n• نوع المنتج أو الخدمة\n• الجمهور المستهدف\n• الميزانية المتاحة\n• أهداف الحملة"
                 components = []
                 
+            elif any(word in content for word in ["اسم", "شركة", "شركتي", "اسم شركتي"]):
+                intent = "company_info"
+                
+                # التحقق من وجود معلومات الشركة المحفوظة
+                company_name = get_user_data(message.user_id, 'company_name')
+                
+                if company_name:
+                    response_content = f"اسم شركتك هو: **{company_name}** 🏢\n\nهل تريد تحديث هذه المعلومات أم تحتاج مساعدة أخرى؟"
+                    components = [
+                        {
+                            "type": "quick_actions",
+                            "title": "خيارات سريعة",
+                            "buttons": [
+                                {"text": "📝 تحديث اسم الشركة", "action": "update_company"},
+                                {"text": "📊 تحليل الموقع", "action": "website_analysis"},
+                                {"text": "🚀 إنشاء حملة", "action": "create_campaign"}
+                            ]
+                        }
+                    ]
+                else:
+                    response_content = "أعتذر، لم أحتفظ بمعلومات شركتك بعد. 📋 هل يمكنك إخباري باسم شركتك لأتمكن من تذكرها؟"
+                    components = [
+                        {
+                            "type": "form_input",
+                            "title": "معلومات الشركة",
+                            "fields": [
+                                {"name": "company_name", "label": "اسم الشركة", "type": "text", "required": True},
+                                {"name": "industry", "label": "نوع النشاط", "type": "text", "required": False}
+                            ]
+                        }
+                    ]
+                
             else:
                 intent = "general_question"
                 response_content = "أفهم أنك تحتاج مساعدة في التسويق الرقمي. 🤔 هل يمكنك توضيح أكثر كيف يمكنني مساعدتك؟"
@@ -230,7 +262,7 @@ class MorvoConversationEngine:
                 content=response_content,
                 intent_detected=intent,
                 confidence_score=0.85,
-                rich_components=components,
+                components=components,
                 next_actions=["يمكنك سؤالي عن أي شيء متعلق بالتسويق الرقمي"]
             )
             
@@ -259,6 +291,50 @@ except Exception as e:
     
     conversation_engine = DummyConversationEngine()
     logger.warning("⚠️ تم إنشاء محرك محادثة وهمي للتوافق")
+
+# ============================================================================
+# 💾 **User Data Storage (Simple In-Memory for now)**
+# ============================================================================
+
+# قاموس مؤقت لحفظ معلومات المستخدمين
+user_data: Dict[str, Dict] = {}
+
+def save_user_data(user_id: str, data: Dict):
+    """حفظ بيانات المستخدم"""
+    if user_id not in user_data:
+        user_data[user_id] = {}
+    user_data[user_id].update(data)
+    logger.info(f"💾 تم حفظ بيانات المستخدم {user_id}: {data}")
+
+def get_user_data(user_id: str, key: str = None):
+    """استرجاع بيانات المستخدم"""
+    if user_id not in user_data:
+        return None
+    if key:
+        return user_data[user_id].get(key)
+    return user_data[user_id]
+
+@app.post("/api/v2/user/data")
+async def save_user_info(request: Dict):
+    """حفظ معلومات المستخدم مثل اسم الشركة"""
+    try:
+        user_id = request.get('user_id', 'default_user')
+        data = request.get('data', {})
+        
+        save_user_data(user_id, data)
+        
+        return {
+            "status": "success",
+            "message": "تم حفظ المعلومات بنجاح",
+            "data": data
+        }
+    except Exception as e:
+        logger.error(f"خطأ في حفظ البيانات: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في حفظ البيانات",
+            "error": str(e)
+        }
 
 # ============================================================================
 # 🕷️ **Website Scraping & Analysis Endpoints**
@@ -292,7 +368,11 @@ async def analyze_website(
         
     except Exception as e:
         logger.error(f"❌ خطأ في بدء تحليل الموقع: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"خطأ في التحليل: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في بدء التحليل",
+            "error": str(e)
+        }
 
 async def perform_website_analysis(url: str, org_id: str, analysis_type: str):
     """تنفيذ تحليل الموقع في الخلفية"""
@@ -369,7 +449,12 @@ async def get_analysis_result(analysis_id: str) -> Dict:
             }
         }
     except Exception as e:
-        raise HTTPException(status_code=404, detail="تحليل غير موجود")
+        logger.error(f"خطأ في استرجاع نتائج التحليل: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في استرجاع النتائج",
+            "error": str(e)
+        }
 
 # ============================================================================
 # 💬 **Chat & Conversation Endpoints**
@@ -391,7 +476,11 @@ async def send_chat_message(message: ChatMessage) -> ChatResponse:
         
     except Exception as e:
         logger.error(f"❌ خطأ في معالجة رسالة الشات: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"خطأ في المحادثة: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في معالجة الرسالة",
+            "error": str(e)
+        }
 
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
@@ -428,7 +517,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             await websocket.send_json({
                 "type": "message",
                 "content": response.content,
-                "rich_components": response.rich_components,
+                "components": response.components,
                 "intent_detected": response.intent_detected,
                 "timestamp": datetime.now().isoformat()
             })
@@ -465,7 +554,12 @@ async def start_onboarding(user_data: Dict) -> Dict:
             ]
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"خطأ في بدء عملية التسجيل: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في بدء عملية التسجيل",
+            "error": str(e)
+        }
 
 @app.post("/api/v2/onboarding/step")
 async def complete_onboarding_step(step: OnboardingStep) -> Dict:
@@ -485,7 +579,12 @@ async def complete_onboarding_step(step: OnboardingStep) -> Dict:
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"خطأ في إتمام خطوة التسجيل: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في إتمام الخطوة",
+            "error": str(e)
+        }
 
 # ============================================================================
 # 🔗 **Platform Connection Endpoints**
@@ -560,7 +659,12 @@ async def get_available_platforms() -> Dict:
             }
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"خطأ في استعراض المنصات المتاحة: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في استعراض المنصات",
+            "error": str(e)
+        }
 
 @app.post("/api/v2/platforms/connect")
 async def connect_platform(request: PlatformConnectionRequest) -> Dict:
@@ -599,7 +703,12 @@ async def connect_platform(request: PlatformConnectionRequest) -> Dict:
             }
             
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"خطأ في ربط المنصة: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في ربط المنصة",
+            "error": str(e)
+        }
 
 @app.get("/api/v2/platforms/status/{org_id}")
 async def get_platform_connections(org_id: str) -> Dict:
@@ -628,7 +737,12 @@ async def get_platform_connections(org_id: str) -> Dict:
             ]
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"خطأ في استعراض حالة ربط المنصات: {str(e)}")
+        return {
+            "status": "error",
+            "message": "خطأ في استعراض حالة ربط المنصات",
+            "error": str(e)
+        }
 
 # ============================================================================
 # 🔔 **Smart Alerts Endpoints**
@@ -647,7 +761,11 @@ async def trigger_smart_alerts(organization_id: str, background_tasks: Backgroun
         }
     except Exception as e:
         logger.error(f"خطأ في تشغيل التنبيهات الذكية: {str(e)}")
-        raise HTTPException(status_code=500, detail="فشل في تشغيل التنبيهات الذكية")
+        return {
+            "status": "error",
+            "message": "خطأ في تشغيل التنبيهات الذكية",
+            "error": str(e)
+        }
 
 @app.get("/api/v2/alerts/status")
 async def get_alerts_status():

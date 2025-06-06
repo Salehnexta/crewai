@@ -2,3 +2,7 @@ fastapi
 uvicorn[standard]
 websockets
 pydantic
+crewai[tools]
+langchain-openai
+langchain-community
+python-dotenv

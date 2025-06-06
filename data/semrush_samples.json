@@ -1,0 +1,115 @@
+{
+  "domain_overview": {
+    "example.com": {
+      "domain": "example.com",
+      "rank": 12345,
+      "organic_keywords": 5432,
+      "organic_traffic": 98765,
+      "organic_traffic_cost": 543210,
+      "adwords_keywords": 123,
+      "adwords_traffic": 4567,
+      "adwords_traffic_cost": 12345,
+      "timestamp": "2025-06-01T00:00:00Z"
+    },
+    "competitor.com": {
+      "domain": "competitor.com",
+      "rank": 5678,
+      "organic_keywords": 9876,
+      "organic_traffic": 87654,
+      "organic_traffic_cost": 432109,
+      "adwords_keywords": 234,
+      "adwords_traffic": 5678,
+      "adwords_traffic_cost": 23456,
+      "timestamp": "2025-06-01T00:00:00Z"
+    }
+  },
+  "keyword_overview": {
+    "digital marketing": {
+      "keyword": "digital marketing",
+      "search_volume": 74000,
+      "keyword_difficulty": 87,
+      "cpc": 12.45,
+      "competitive_density": 0.89,
+      "top_domains": [
+        {"domain": "hubspot.com", "position": 1},
+        {"domain": "neilpatel.com", "position": 2},
+        {"domain": "wordstream.com", "position": 3}
+      ],
+      "timestamp": "2025-06-01T00:00:00Z"
+    },
+    "social media marketing": {
+      "keyword": "social media marketing",
+      "search_volume": 35000,
+      "keyword_difficulty": 82,
+      "cpc": 10.87,
+      "competitive_density": 0.85,
+      "top_domains": [
+        {"domain": "buffer.com", "position": 1},
+        {"domain": "sproutsocial.com", "position": 2},
+        {"domain": "hootsuite.com", "position": 3}
+      ],
+      "timestamp": "2025-06-01T00:00:00Z"
+    }
+  },
+  "backlinks_overview": {
+    "example.com": {
+      "total_backlinks": 12345,
+      "referring_domains": 765,
+      "referring_ips": 698,
+      "follow_links": 9876,
+      "nofollow_links": 2469,
+      "top_referring_domains": [
+        {"domain": "partner1.com", "backlinks": 543},
+        {"domain": "partner2.com", "backlinks": 321},
+        {"domain": "news.com", "backlinks": 234}
+      ],
+      "timestamp": "2025-06-01T00:00:00Z"
+    }
+  },
+  "competitors": {
+    "example.com": {
+      "domain": "example.com",
+      "organic_competitors": [
+        {"domain": "competitor1.com", "common_keywords": 345, "se_keywords": 5432, "se_traffic": 43210},
+        {"domain": "competitor2.com", "common_keywords": 289, "se_keywords": 4567, "se_traffic": 34567},
+        {"domain": "competitor3.com", "common_keywords": 167, "se_keywords": 3456, "se_traffic": 23456}
+      ],
+      "paid_competitors": [
+        {"domain": "paidcompetitor1.com", "common_keywords": 89, "ad_keywords": 234, "ad_traffic": 4567},
+        {"domain": "paidcompetitor2.com", "common_keywords": 67, "ad_keywords": 187, "ad_traffic": 3456}
+      ],
+      "timestamp": "2025-06-01T00:00:00Z"
+    }
+  },
+  "content_gaps": {
+    "example.com-vs-competitor.com": {
+      "target_domain": "example.com",
+      "competitor_domain": "competitor.com",
+      "gap_keywords": [
+        {"keyword": "marketing automation", "competitor_position": 3, "search_volume": 12300},
+        {"keyword": "email marketing tools", "competitor_position": 5, "search_volume": 9400},
+        {"keyword": "seo software comparison", "competitor_position": 2, "search_volume": 5600}
+      ],
+      "timestamp": "2025-06-01T00:00:00Z"
+    }
+  },
+  "position_tracking": {
+    "example.com": {
+      "domain": "example.com",
+      "keywords_tracked": 100,
+      "visibility_trend": [
+        {"date": "2025-05-01", "visibility": 45.6},
+        {"date": "2025-05-08", "visibility": 46.2},
+        {"date": "2025-05-15", "visibility": 46.8},
+        {"date": "2025-05-22", "visibility": 47.5},
+        {"date": "2025-06-01", "visibility": 48.1}
+      ],
+      "top_keywords": [
+        {"keyword": "best marketing platform", "position": 3, "search_volume": 4500},
+        {"keyword": "marketing analytics tools", "position": 5, "search_volume": 3200},
+        {"keyword": "digital strategy software", "position": 2, "search_volume": 2800}
+      ],
+      "timestamp": "2025-06-01T00:00:00Z"
+    }
+  }
+}

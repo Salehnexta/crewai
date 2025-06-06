@@ -1,6 +1,5 @@
 [build]
-builder = "dockerfile"
-dockerfilePath = "Dockerfile.railway"
+builder = "NIXPACKS"
 
 [deploy]
 # This startCommand includes all necessary flags for WebSocket proxying

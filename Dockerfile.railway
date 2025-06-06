@@ -18,8 +18,8 @@ COPY requirements.txt .
 # Install Python dependencies with simplified approach
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all Python files needed for the application
-COPY *.py .
+# Copy all project files needed for the application
+COPY . .
 
 # Expose port
 EXPOSE 8000

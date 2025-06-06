@@ -243,7 +243,22 @@ class MorvoConversationEngine:
             )
 
 # إنشاء محرك المحادثة
-conversation_engine = MorvoConversationEngine()
+try:
+    conversation_engine = MorvoConversationEngine()
+    logger.info("✅ تم إنشاء محرك المحادثة بنجاح")
+except Exception as e:
+    logger.error(f"❌ خطأ في إنشاء محرك المحادثة: {e}")
+    # إنشاء محرك وهمي للتوافق
+    class DummyConversationEngine:
+        def analyze_intent(self, *args, **kwargs):
+            return {"intent": "general_query", "confidence": 0.0}
+        def generate_response(self, *args, **kwargs):
+            return "عذراً، محرك المحادثة غير متاح حالياً. الرجاء المحاولة لاحقاً."
+        def handle_onboarding(self, *args, **kwargs):
+            return {"success": False, "message": "Onboarding unavailable"}
+    
+    conversation_engine = DummyConversationEngine()
+    logger.warning("⚠️ تم إنشاء محرك محادثة وهمي للتوافق")
 
 # ============================================================================
 # 🕷️ **Website Scraping & Analysis Endpoints**
@@ -285,6 +300,17 @@ async def perform_website_analysis(url: str, org_id: str, analysis_type: str):
     try:
         logger.info(f"🔍 تنفيذ تحليل الموقع: {url}")
         
+        # التحقق من توفر الوحدة
+        if MorvoWebsiteScraper is None:
+            logger.warning("⚠️ وحدة تحليل المواقع غير متوفرة")
+            # إرسال إشعار بالفشل
+            await notify_analysis_complete(org_id, {
+                "status": "failed",
+                "message": "خدمة تحليل المواقع غير متوفرة حالياً",
+                "url": url
+            })
+            return
+        
         # تنفيذ التحليل
         global website_scraper
         if website_scraper is None:
@@ -299,8 +325,14 @@ async def perform_website_analysis(url: str, org_id: str, analysis_type: str):
         
     except Exception as e:
         logger.error(f"❌ خطأ في تحليل الموقع {url}: {str(e)}")
+        # إرسال إشعار بالفشل
+        await notify_analysis_complete(org_id, {
+            "status": "error",
+            "message": f"خطأ في التحليل: {str(e)}",
+            "url": url
+        })
 
-async def notify_analysis_complete(org_id: str, result: WebsiteAnalysisResult):
+async def notify_analysis_complete(org_id: str, result: Any):
     """إشعار المستخدم باكتمال التحليل"""
     
     try:

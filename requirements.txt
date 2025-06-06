@@ -8,3 +8,7 @@ python-dotenv
 requests
 supabase
 crewai[tools]==0.121.0
+langchain-community>=0.3.0
+beautifulsoup4
+aiohttp
+Pillow

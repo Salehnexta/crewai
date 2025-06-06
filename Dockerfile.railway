@@ -18,13 +18,8 @@ COPY requirements.txt .
 # Install Python dependencies with simplified approach
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all application files
-COPY morvo_api_v2.py .
-COPY morvo_website_scraper.py .
-COPY smart_alerts.py .
-COPY semrush_supabase_integration.py .
-COPY agent_memory.py .
-COPY agent_context_manager.py .
+# Copy all Python files needed for the application
+COPY *.py .
 
 # Expose port
 EXPOSE 8000

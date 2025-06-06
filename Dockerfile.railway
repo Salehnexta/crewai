@@ -23,7 +23,7 @@ COPY morvo_api_v2.py .
 COPY morvo_website_scraper.py .
 COPY smart_alerts.py .
 COPY semrush_supabase_integration.py .
-COPY agent_memory_manager.py .
+COPY agent_memory.py .
 COPY agent_context_manager.py .
 
 # Expose port

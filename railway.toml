@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "uvicorn morvo_api_v2:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*' --ws-ping-interval 20 --ws-ping-timeout 20"
+startCommand = "uvicorn morvo_api_v2:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips '*'"
 healthcheckPath = "/health"
 healthcheckTimeout = 600
 restartPolicyType = "ON_FAILURE"

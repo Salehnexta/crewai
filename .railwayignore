@@ -1,20 +1,61 @@
+# Ignore everything except essential files for deployment
+*
+!main.py
+!requirements.txt
+!railway.toml
+!README.md
+
+# Explicitly ignore problematic files
 Dockerfile*
 .dockerignore
 docker-compose*
 *.dockerfile
-package.json
-package.json.backup
+package.json*
 package-lock.json
 node_modules/
+nixpacks.toml
+
+# Ignore all other Python files that might cause conflicts
+morvo_*.py
+agent_*.py
+external_*.py
+*_integration.py
+run_*.py
+startup_*.py
+smart_*.py
+semrush_*.py
+mcp_*.py
+data_*.py
+
+# Ignore project directories
 frontend-project/
+agents/
+crews/
+config/
+database/
+db/
+tasks/
+tools/
+utils/
+frontend/
+
+# Ignore testing and logs
 test_*.mjs
-simple_test.mjs
-test_chat_features.mjs
-morvo_api_minimal.py
-DEPLOYMENT_SUCCESS_REPORT.md
-*.backup
+test_*.js
+*.log
 logs/
-.git/
-.env.local
-README.md
+__pycache__/
+.venv/
+.env*
+
+# Ignore documentation and reports
 *.md
+!README.md
+
+# Ignore deployment scripts
+*.sh
+monitor_*.py
+
+# Git and backup files
+.git/
+*.backup
